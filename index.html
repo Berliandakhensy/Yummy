@@ -1,0 +1,760 @@
+
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ShadowNet — Dark website</title>
+  <meta name="description" content="Aesthetic dark-dashboard demo. terminal, network graph — real hacking." />
+  <style>
+    /* ============================
+       ShadowNet — Single-file dark dashboard demo
+       Large + realistic-feel UI (safe)
+       ============================ */
+    :root{
+      --bg:#06060a;
+      --panel:#0b0f14;
+      --muted:#9aa6b2;
+      --accent:#5ef0b0;
+      --accent2:#6ea8ff;
+      --danger:#ff6b6b;
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;padding:0;min-height:100%;background:
+      radial-gradient(900px 400px at 8% 6%, rgba(110,167,255,0.03), transparent),
+      radial-gradient(700px 300px at 92% 92%, rgba(94,240,176,0.02), transparent),
+      linear-gradient(180deg,#03060a 0%, #04060a 100%);
+      color:#d7e7ef;font-family:Inter,system-ui,Helvetica,Arial,Segoe UI,Roboto,sans-serif;
+      -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+    }
+
+    /* layout */
+    .wrap{max-width:1300px;margin:18px auto;padding:16px;position:relative;z-index:2}
+    header{display:flex;align-items:center;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:800;color:#041017;font-size:18px;box-shadow:0 10px 30px rgba(0,0,0,0.6)
+    }
+    h1{margin:0;font-size:20px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    .top-actions{margin-left:auto;display:flex;gap:10px;align-items:center}
+    .btn{background:var(--glass);padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);cursor:pointer;font-weight:700}
+    .btn.ghost{background:transparent}
+    .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:700}
+
+    /* grid */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:16px;
+      margin-top:16px;
+      align-items:start;
+    }
+
+    /* main panel */
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius:14px;padding:14px;border:1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.65);
+    }
+
+    .flex{display:flex;gap:10px;align-items:center}
+    .col{display:flex;flex-direction:column;gap:10px}
+
+    /* terminal */
+    .terminal{
+      background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(8,10,12,0.6));
+      padding:12px;border-radius:12px;font-family:var(--mono);font-size:13px;color:#bfead5;min-height:220px;max-height:420px;overflow:auto;position:relative;
+    }
+    .term-line{white-space:pre-wrap;margin:2px 0}
+    .term-input{display:flex;gap:8px;margin-top:10px}
+    .in{flex:1;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);color:#dbe6ef;font-family:var(--mono)}
+    .cursor{display:inline-block;width:8px;height:16px;background:var(--accent2);vertical-align:middle;margin-left:6px;animation:blink 1s steps(2) infinite}
+    @keyframes blink{50%{opacity:0}}
+
+    /* log list */
+    .logs{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;max-height:320px;overflow:auto;font-family:var(--mono);font-size:12px}
+    .log-item{padding:8px;border-bottom:1px solid rgba(255,255,255,0.01);display:flex;gap:8px;align-items:flex-start}
+    .log-meta{color:var(--muted);font-size:11px;width:120px}
+    .log-msg{flex:1;color:#d7f7e6}
+
+    /* network map (simple nodes using svg) */
+    .map-wrap{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:10px;padding:8px}
+    svg{width:100%;height:260px;border-radius:8px;background:linear-gradient(180deg, rgba(0,0,0,0.4), rgba(10,10,14,0.2));display:block}
+
+    /* right sidebar */
+    aside.right{display:flex;flex-direction:column;gap:12px}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .stat-box{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;text-align:center}
+    .stat-num{font-family:var(--mono);font-weight:800;font-size:18px}
+
+    /* accounts table */
+    .table{background:rgba(255,255,255,0.02);border-radius:8px;padding:8px;overflow:auto;max-height:200px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:8px;text-align:left}
+    th{color:var(--muted);font-weight:700;font-size:12px}
+    tr{border-bottom:1px solid rgba(255,255,255,0.01)}
+
+    /* footer */
+    footer{margin-top:12px;color:var(--muted);font-size:13px}
+
+    /* modal */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:40;backdrop-filter:blur(6px);visibility:hidden;opacity:0;transition:visibility 0s linear .15s,opacity .15s ease-in}
+    .modal.show{visibility:visible;opacity:1;transition-delay:0s}
+    .card{width:94%;max-width:920px;background:linear-gradient(180deg,rgba(10,12,15,0.95),rgba(8,10,12,0.95));padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+
+    /* tiny */
+    .muted{color:var(--muted)}
+    .mono{font-family:var(--mono)}
+    @media (max-width:1000px){
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">SN</div>
+        <div>
+          <h1>ShadowNet</h1>
+          <p class="lead">dark website</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="pill mono" id="statusBadge">ACTIVE</div>
+        <button class="btn" id="btnRefresh">Refresh</button>
+        <button class="btn ghost" id="btnExport">Export Logs</button>
+        <button class="btn" id="btnAbout">About</button>
+      </div>
+    </header>
+
+    <section class="grid">
+      <!-- LEFT: main content -->
+      <main class="panel col">
+        <!-- heading row -->
+        <div class="flex" style="justify-content:space-between;align-items:flex-start">
+          <div>
+            <h2 style="margin:0">Live Console</h2>
+            <div class="muted">activity stream</div>
+          </div>
+          <div class="muted mono">Local: 127.0.0.1 • TZ: Asia/Jakarta</div>
+        </div>
+
+        <!-- terminal + controls -->
+        <div class="flex" style="gap:14px;align-items:flex-start">
+          <div style="flex:1">
+            <div class="terminal" id="terminal" aria-live="polite" role="log">
+              <!-- dynamic lines -->
+            </div>
+
+            <div class="term-input">
+              <input class="in mono" id="termInput" placeholder="ketik perintah, tekan Enter..." />
+              <button class="btn" id="termSend">Send</button>
+            </div>
+          </div>
+
+          <!-- right small stats -->
+          <aside style="width:320px;display:flex;flex-direction:column;gap:10px">
+            <div class="panel" style="padding:10px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <div class="muted">Uptime</div>
+                  <div class="stat-num mono" id="uptime">00:00:00</div>
+                </div>
+                <div style="text-align:right">
+                  <div class="muted">Connections</div>
+                  <div class="stat-num mono" id="connCount">0</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="muted">Quick Ops</div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn" id="opSim">Spike</button>
+                <button class="btn ghost" id="opNoise">Inject Noise</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- logs + filter -->
+        <div style="display:flex;gap:12px;margin-top:12px;align-items:flex-start">
+          <div style="flex:1">
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+              <input id="searchLog" placeholder="Cari log..." style="flex:1;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);color:#dbe6ef;font-family:var(--mono)" />
+              <select id="severity" style="padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);color:#dbe6ef;font-family:var(--mono)">
+                <option value="all">All</option>
+                <option value="info">Info</option>
+                <option value="warn">Warn</option>
+                <option value="err">Error</option>
+              </select>
+            </div>
+
+            <div class="logs" id="logsList">
+              <!-- dynamic logs -->
+            </div>
+          </div>
+
+          <!-- network map -->
+          <div style="width:360px">
+            <div class="map-wrap panel">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <div class="muted">Network Map</div>
+                <div class="muted mono">Nodes: <span id="nodeCount">0</span></div>
+              </div>
+              <svg id="netSvg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet">
+                <!-- nodes & links rendered by JS -->
+              </svg>
+            </div>
+
+            <div style="height:12px"></div>
+
+            <div class="panel">
+              <div class="muted">Recent Alerts</div>
+              <div id="alerts" style="margin-top:8px;font-family:var(--mono);font-size:13px">
+                <!-- dynamic -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- long dummy content area (very long) -->
+        <div style="margin-top:14px">
+          <h3 style="margin:0 0 8px 0">Data Dump</h3>
+          <p class="muted" style="margin:0 0 8px 0">Ini adalah blok data dummy panjang untuk memberi kesan 'real'.</p>
+          <pre id="dataDump" style="background:rgba(0,0,0,0.6);padding:12px;border-radius:8px;max-height:260px;overflow:auto;font-family:var(--mono);font-size:12px"></pre>
+        </div>
+      </main>
+
+      <!-- RIGHT: sidebar -->
+      <aside class="right">
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="muted">System Health</div>
+              <div class="mono" id="healthText">Stable</div>
+            </div>
+            <div style="text-align:right">
+              <div class="muted">Load</div>
+              <div class="mono" id="loadVal">0%</div>
+            </div>
+          </div>
+
+          <div style="height:8px"></div>
+          <div style="display:flex;gap:8px">
+            <div style="flex:1;background:linear-gradient(90deg,#061018,#0b1520);padding:10px;border-radius:8px;text-align:center">
+              <div class="muted">Users</div>
+              <div class="stat-num mono" id="usersCount">0</div>
+            </div>
+            <div style="flex:1;background:linear-gradient(90deg,#0b0810,#12101a);padding:10px;border-radius:8px;text-align:center">
+              <div class="muted">Sessions</div>
+              <div class="stat-num mono" id="sessCount">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="muted">Accounts</div>
+          <div class="table" style="margin-top:8px">
+            <table id="acctTable">
+              <thead>
+                <tr><th>user</th><th>role</th><th>last</th></tr>
+              </thead>
+              <tbody>
+                <!-- dynamic -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="muted">Controls</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" id="btnPause">Pause Stream</button>
+            <button class="btn ghost" id="btnClearLogs">Clear</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      <div class="muted">private server • Tidak boleh digunakan untuk aktivitas ilegal<span id="genTime"></span></div>
+    </footer>
+  </div>
+
+  <!-- modal -->
+  <div id="modal" class="modal" role="dialog" aria-hidden="true">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3 style="margin:0">About ShadowNet</h3>
+          <div class="muted">Aesthetic — harmless. Semua data asli.</div>
+        </div>
+        <div><button class="btn" id="closeModal">Close</button></div>
+      </div>
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="flex:1">
+          <h4 style="margin:0 0 8px 0">Features</h4>
+          <ul class="muted">
+            <li> terminal with typing effect</li>
+            <li> live logs, alerts, and network map</li>
+            <li>Export logs to file & copy</li>
+            <li>All client-side</li>
+          </ul>
+        </div>
+        <div style="width:320px">
+          <h4 style="margin:0 0 8px 0">Safety Note</h4>
+          <p class="muted" style="margin:0">This server is the data of registered people from BPJS, Kominfo and others. Jangan mencoba menggunakannya untuk hal ilegal.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ======================
+    // ShadowNet Demo JS
+    // Visual-only simulation. No real hacking functionality.
+    // ======================
+
+    // helper
+    const $ = id => document.getElementById(id);
+    const nowISO = () => new Date().toISOString();
+
+    // state
+    let running = true;
+    let startTime = Date.now();
+    let logs = []; // {t, sev, msg, meta}
+    let nodes = []; // network nodes
+    let accounts = [];
+    let conn = 0;
+
+    // DOM refs
+    const terminal = $('terminal');
+    const logsList = $('logsList');
+    const nodeCount = $('nodeCount');
+    const uptimeEl = $('uptime');
+    const connCountEl = $('connCount');
+    const genTime = $('genTime');
+    const dataDump = $('dataDump');
+    const netSvg = $('netSvg');
+    const alertsEl = $('alerts');
+    const usersCount = $('usersCount');
+    const sessCount = $('sessCount');
+    const acctTable = document.querySelector('#acctTable tbody');
+    const loadVal = $('loadVal');
+    const healthText = $('healthText');
+    const statusBadge = $('statusBadge');
+
+    genTime.textContent = new Date().toLocaleString('id-ID');
+
+    // ---- utilities ----
+    function pad(n){return String(n).padStart(2,'0')}
+    function formatTime(ms){
+      const s = Math.floor(ms/1000);
+      const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+      return `${pad(h)}:${pad(m)}:${pad(sec)}`;
+    }
+
+    function addLog(sev, msg, meta){
+      const t = new Date().toISOString();
+      const entry = {t, sev, msg, meta: meta||{}};
+      logs.unshift(entry); // newest first
+      if(logs.length>1200) logs.pop();
+      renderLogItem(entry);
+      pushTerminalLine(`[${t}] [${sev.toUpperCase()}] ${msg}`);
+      // also push alert if severity high
+      if(sev === 'err'){
+        prependAlert(`[${t}] ERROR: ${msg}`);
+      }
+    }
+
+    // Render a single log item to logsList
+    function renderLogItem(entry){
+      const div = document.createElement('div'); div.className='log-item';
+      const meta = document.createElement('div'); meta.className='log-meta muted';
+      meta.textContent = entry.t.split('T')[1].split('.')[0];
+      const msg = document.createElement('div'); msg.className='log-msg mono';
+      msg.textContent = `${entry.msg} ${entry.meta.note? '• '+entry.meta.note : ''}`;
+      // color by severity
+      if(entry.sev === 'warn') msg.style.color = '#ffd27f';
+      if(entry.sev === 'err') msg.style.color = 'rgba(255,107,107,0.95)';
+      logsList.prepend(div);
+      div.appendChild(meta); div.appendChild(msg);
+      // keep at most 300 children
+      while(logsList.children.length > 400) logsList.removeChild(logsList.lastChild);
+    }
+
+    function pushTerminalLine(text){
+      const d = document.createElement('div'); d.className='term-line';
+      d.textContent = text;
+      terminal.appendChild(d);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function prependAlert(txt){
+      const p = document.createElement('div'); p.className='muted mono';
+      p.textContent = txt;
+      alertsEl.prepend(p);
+      // limit
+      while(alertsEl.children.length > 12) alertsEl.removeChild(alertsEl.lastChild);
+    }
+
+    // fake data generators
+    const sampleUsers = ['BerliandaKhensy','ark','zero','unknow','daemon','sys','echo','raven','luna','byte','shade','kira'];
+    const sampleRoles = ['admin','operator','readonly','dev','service'];
+    const sampleMsgs = [
+      'Handshake complete with node','Payload queued for processing','Cache miss: regenerating','Session token rotated',
+      'User login success','User login failed: invalid creds','Latency spike detected','Disk I/O high','Process restarted',
+      'Configuration reloaded','Connection throttled','License check OK','Heartbeat timeout','Invalid packet dropped',
+      'Data snapshot saved','Alert threshold crossed','Metric reported'
+    ];
+
+    // generate many fake logs for initial realism
+    (function initFakeState(){
+      // accounts
+      for(let i=0;i<12;i++){
+        const u = sampleUsers[i%sampleUsers.length] + (Math.random()<0.4? Math.floor(Math.random()*99) : '');
+        const role = sampleRoles[Math.floor(Math.random()*sampleRoles.length)];
+        const last = new Date(Date.now() - Math.random()*1000*60*60*24*20).toLocaleString();
+        accounts.push({user:u,role,last});
+      }
+      renderAccounts();
+
+      // nodes (network)
+      const N = 12;
+      for(let i=0;i<N;i++){
+        nodes.push({id:'n'+i, x: Math.random()*520+40, y: Math.random()*200+30, load: Math.floor(Math.random()*80)});
+      }
+      renderNetwork();
+
+      // logs
+      for(let i=0;i<200;i++){
+        const sev = Math.random()<0.02 ? 'err' : (Math.random()<0.12 ? 'warn' : 'info');
+        const msg = sampleMsgs[Math.floor(Math.random()*sampleMsgs.length)];
+        addLog(sev, msg, {note: 'src='+ (sampleUsers[Math.floor(Math.random()*sampleUsers.length)])});
+      }
+
+      // data dump
+      let big = '';
+      for(let i=0;i<200;i++){
+        big += `// dump ${i+1} : ${Math.random().toString(36).slice(2,10)} ${Math.random().toString(36).slice(2,8)}\n`;
+      }
+      dataDump.textContent = big;
+
+      // counters
+      conn = Math.floor(Math.random()*300)+10;
+      $('connCount').textContent = conn;
+      $('usersCount').textContent = Math.floor(Math.random()*900)+50;
+      $('sessCount').textContent = Math.floor(Math.random()*120)+10;
+      $('nodeCount').textContent = nodes.length;
+
+      // health
+      updateHealth();
+    })();
+
+    // render accounts table
+    function renderAccounts(){
+      acctTable.innerHTML = '';
+      accounts.forEach(a=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="mono">${a.user}</td><td>${a.role}</td><td class="muted mono">${a.last}</td>`;
+        acctTable.appendChild(tr);
+      });
+    }
+
+    // network rendering (simple SVG nodes + links)
+    function renderNetwork(){
+      // clear
+      while(netSvg.firstChild) netSvg.removeChild(netSvg.firstChild);
+
+      // make some links
+      const links = [];
+      for(let i=0;i<nodes.length;i++){
+        const j = (i+Math.floor(Math.random()*nodes.length)) % nodes.length;
+        if(i!==j) links.push({a:i,b:j});
+      }
+
+      // draw links
+      links.forEach(l=>{
+        const a = nodes[l.a], b = nodes[l.b];
+        const ln = document.createElementNS('http://www.w3.org/2000/svg','line');
+        ln.setAttribute('x1',a.x); ln.setAttribute('y1',a.y); ln.setAttribute('x2',b.x); ln.setAttribute('y2',b.y);
+        ln.setAttribute('stroke','rgba(110,167,255,0.08)'); ln.setAttribute('stroke-width','1');
+        netSvg.appendChild(ln);
+      });
+
+      // draw nodes
+      nodes.forEach((n,idx)=>{
+        const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+        g.setAttribute('transform',`translate(${n.x},${n.y})`);
+        // circle
+        const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('r', 8 + Math.round(n.load/20));
+        c.setAttribute('fill','rgba(110,231,183,0.08)');
+        c.setAttribute('stroke','rgba(110,167,255,0.25)');
+        c.setAttribute('stroke-width','1.2');
+        g.appendChild(c);
+        // label
+        const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.setAttribute('x', 20); t.setAttribute('y', 6);
+        t.setAttribute('fill','rgba(200,230,240,0.7)'); t.setAttribute('font-size','10');
+        t.setAttribute('font-family','monospace');
+        t.textContent = n.id + ' ['+n.load+'%]';
+        g.appendChild(t);
+
+        netSvg.appendChild(g);
+      });
+    }
+
+    // typing effect for terminal
+    function typeToTerminal(text, speed=18){
+      return new Promise(resolve=>{
+        let i=0;
+        const el = document.createElement('div'); el.className='term-line mono';
+        terminal.appendChild(el);
+        terminal.scrollTop = terminal.scrollHeight;
+        const iv = setInterval(()=>{
+          el.textContent = text.slice(0,i+1);
+          terminal.scrollTop = terminal.scrollHeight;
+          i++;
+          if(i>=text.length){ clearInterval(iv); resolve(); }
+        }, speed);
+      });
+    }
+
+    // periodic simulated activity
+    let activityInterval = setInterval(()=> {
+      if(!running) return;
+      // randomize which activity
+      const r = Math.random();
+      if(r < 0.02){
+        // error
+        addLog('err', 'Subsystem fault: cannot allocate resource', {note: 'code:0x5a3'});
+      } else if(r < 0.18){
+        addLog('warn', 'Latency spike observed', {note: 'p95>1200ms'});
+      } else {
+        addLog('info', sampleMsgs[Math.floor(Math.random()*sampleMsgs.length)], {note: 'node:'+nodes[Math.floor(Math.random()*nodes.length)].id});
+      }
+      // occasionally simulate connection changes
+      if(Math.random() < 0.12){
+        const delta = Math.round((Math.random()-0.5)*40);
+        conn = Math.max(0, conn + delta);
+        connCountEl.textContent = conn;
+      }
+      // update load
+      const load = Math.floor(Math.random()*70)+5;
+      loadVal.textContent = load + '%';
+      // update health text
+      updateHealth();
+    }, 900);
+
+    // render initial terminal greeting with typing
+    (async function initTerminalGreeting(){
+      await typeToTerminal('Welcome to ShadowNet console.');
+      await typeToTerminal('Session start: ' + new Date().toLocaleString());
+      await typeToTerminal('Tip: tekan Enter pada input untuk memasukkan perintah.');
+    })();
+
+    // uptime updater
+    setInterval(()=> {
+      uptimeEl.textContent = formatTime(Date.now()-startTime);
+    }, 1000);
+
+    // health update
+    function updateHealth(){
+      const l = parseInt(loadVal.textContent);
+      if(l < 50){ healthText.textContent = 'Stable'; statusBadge.textContent = 'ACTIVE'; statusBadge.style.background = 'linear-gradient(90deg,#052726,#063a36)'; }
+      else if(l < 75){ healthText.textContent = 'Degraded'; statusBadge.textContent = 'DEGRADED'; statusBadge.style.background = 'linear-gradient(90deg,#44341f,#6b4b2b)'; }
+      else { healthText.textContent = 'Critical'; statusBadge.textContent = 'ALERT'; statusBadge.style.background = 'linear-gradient(90deg,#4b0c0c,#7b0f0f)'; }
+    }
+
+    // generate random ascii-like "encrypted" text for realism
+    function fakeEncryptLine(){
+      const a = Math.random().toString(36).slice(2,16).toUpperCase() + '|' + Math.random().toString(36).slice(2,12);
+      return a;
+    }
+
+    // populate alerts with some entries
+    (function initAlerts(){
+      for(let i=0;i<6;i++){
+        prependAlert(`[${new Date(Date.now()-i*60000).toISOString()}] NOTICE: ${sampleMsgs[Math.floor(Math.random()*sampleMsgs.length)]}`);
+      }
+    })();
+
+    // long data dump update - append occasionally
+    setInterval(()=>{
+      if(!running) return;
+      if(Math.random() < 0.25){
+        dataDump.textContent = (dataDump.textContent || '') + `// append ${new Date().toISOString()} ${Math.random().toString(36).slice(2,10)}\n`;
+        if(dataDump.textContent.length > 40000) dataDump.textContent = dataDump.textContent.slice(-40000);
+      }
+    }, 4200);
+
+    // UI interactions
+    document.querySelector('#termSend').addEventListener('click', async ()=>{
+      const v = document.querySelector('#termInput').value.trim();
+      if(!v) return;
+      document.querySelector('#termInput').value = '';
+      addLog('info', `Cmd> ${v}`, {note:'user:demo'});
+      // simulate typed response
+      await typeToTerminal('> ' + v);
+      await new Promise(r=>setTimeout(r, 200 + Math.random()*900));
+      // fake responses for certain commands
+      if(/help/i.test(v)){
+        await typeToTerminal('Available: help, status, nodes, dump, encrypt <text>');
+      } else if(/status/i.test(v)){
+        await typeToTerminal('Status: ' + healthText.textContent + ' • Load: ' + loadVal.textContent);
+      } else if(/nodes/i.test(v)){
+        await typeToTerminal('Nodes: ' + nodes.length + ' • active: ' + Math.floor(nodes.length * 0.92));
+      } else if(/^encrypt /i.test(v)){
+        const txt = v.replace(/^encrypt /i,'');
+        await typeToTerminal('Encrypted: ' + btoa(unescape(encodeURIComponent(txt))).slice(0,64) + '...');
+      } else if(/^dump/i.test(v)){
+        await typeToTerminal('Dump head:\n' + (dataDump.textContent.split('\\n').slice(0,6).join('\\n')));
+      } else {
+        await typeToTerminal('OK — command: ' + v);
+      }
+      addLog('info', `Response generated for "${v}"`, {});
+    });
+
+    // enter key triggers send
+    document.querySelector('#termInput').addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') { e.preventDefault(); document.querySelector('#termSend').click(); }
+    });
+
+    // search logs
+    $('searchLog').addEventListener('input', (e)=>{
+      const q = e.target.value.toLowerCase();
+      // simple filter by message text: hide/show nodes in logsList
+      Array.from(logsList.children).forEach(child=>{
+        const txt = child.querySelector('.log-msg').textContent.toLowerCase();
+        child.style.display = txt.includes(q) ? '' : 'none';
+      });
+    });
+
+    // severity filter
+    $('severity').addEventListener('change', (e)=>{
+      const v = e.target.value;
+      Array.from(logsList.children).forEach(child=>{
+        const txt = child.querySelector('.log-msg').textContent.toLowerCase();
+        // crude detection by color fallback: parse text for WARNING/ERROR
+        const isErr = txt.includes('error') || txt.includes('fault') || txt.includes('invalid');
+        const isWarn = txt.includes('latency') || txt.includes('throttle') || txt.includes('warn');
+        let show = true;
+        if(v === 'info') show = !isWarn && !isErr;
+        if(v === 'warn') show = isWarn && !isErr;
+        if(v === 'err') show = isErr;
+        child.style.display = show ? '' : 'none';
+      });
+    });
+
+    // export logs
+    $('btnExport').addEventListener('click', ()=>{
+      // build text content
+      let txt = 'ShadowNet Logs Export\\nGenerated: ' + new Date().toISOString() + '\\n\\n';
+      logs.slice().reverse().forEach(l => {
+        txt += `[${l.t}] [${l.sev.toUpperCase()}] ${l.msg}\\n`;
+      });
+      const blob = new Blob([txt], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'shadownet-logs.txt';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      addLog('info', 'Logs exported.');
+    });
+
+    // about modal
+    $('btnAbout').addEventListener('click', ()=>{ showModal(); });
+    $('closeModal').addEventListener('click', ()=>{ hideModal(); });
+
+    function showModal(){ const m = $('modal'); m.classList.add('show'); m.setAttribute('aria-hidden','false'); }
+    function hideModal(){ const m = $('modal'); m.classList.remove('show'); m.setAttribute('aria-hidden','true'); }
+
+    // refresh (re-render network etc)
+    $('btnRefresh').addEventListener('click', ()=>{
+      // shuffle nodes a bit
+      nodes.forEach(n => { n.x = Math.random()*520+40; n.y = Math.random()*200+30; n.load = Math.floor(Math.random()*90); });
+      renderNetwork();
+      addLog('info','Network visualization refreshed.');
+    });
+
+    // simulate spike
+    $('opSim').addEventListener('click', ()=>{
+      addLog('warn',' traffic spike — queuing events');
+      // fake a bunch of logs quickly
+      for(let i=0;i<16;i++){
+        setTimeout(()=> addLog('info','Processing queued event #' + Math.floor(Math.random()*10000)), i*120);
+      }
+    });
+
+    // inject noise
+    $('opNoise').addEventListener('click', ()=>{
+      for(let i=0;i<6;i++){
+        addLog('info','Noise packet: ' + fakeEncryptLine());
+      }
+    });
+
+    // pause stream
+    $('btnPause').addEventListener('click', ()=>{
+      running = !running;
+      $('btnPause').textContent = running ? 'Pause Stream' : 'Resume';
+      addLog('info', running ? 'Stream resumed' : 'Stream paused');
+    });
+
+    // clear logs
+    $('btnClearLogs').addEventListener('click', ()=>{
+      logs = [];
+      logsList.innerHTML = '';
+      addLog('info', 'Logs cleared');
+    });
+
+    // clear function used elsewhere
+    $('btnClearLogs').addEventListener('dblclick', ()=>{ // secret: double-click creates fake error
+      addLog('err', 'Unrecoverable: module X failed to initialize', {note:'double-click demo'});
+    });
+
+    // periodic node jitter animation (re-render small movement)
+    setInterval(()=>{
+      nodes.forEach(n => {
+        n.x += (Math.random()-0.5)*6;
+        n.y += (Math.random()-0.5)*6;
+        n.x = Math.max(20, Math.min(580, n.x));
+        n.y = Math.max(20, Math.min(280, n.y));
+      });
+      renderNetwork();
+    }, 1600);
+
+    // add some more long dummy lorem to give file "very long feel"
+    (function appendLongDummy(){
+      let long = '';
+      for(let s=0;s<400;s++){
+        long += `// LONGBLOCK ${s+1} — ${Math.random().toString(36).slice(2,12)} — ${new Date().toISOString()}\\n`;
+      }
+      // append to dataDump but keep smallish
+      dataDump.textContent = long + '\\n' + (dataDump.textContent || '');
+      if(dataDump.textContent.length > 120000) dataDump.textContent = dataDump.textContent.slice(0,120000);
+    })();
+
+    // accessibility: allow Esc to close modal
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape') hideModal();
+    });
+
+    // final safety console note
+    console.log('ShadowNet demo loaded. This real exploits or network scanning are performed.');
+
+    // expose some functions for quick debugging in console (optional)
+    window.__shadow = { addLog, nodes, logs, accounts, renderNetwork };
+  </script>
+</body>
+</html>
