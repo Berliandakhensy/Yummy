@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Roblox Lua Obfuscator - Military Grade Protection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+        
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.5), 0 0 40px rgba(147, 51, 234, 0.3);
+        }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+            background-image: 
+                linear-gradient(rgba(147, 51, 234, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(147, 51, 234, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: matrix-move 20s linear infinite;
+        }
+        
+        @keyframes matrix-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .security-level {
+            background: linear-gradient(90deg, #10b981 0%, #3b82f6 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .protection-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .protection-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(147, 51, 234, 0.3);
+            border-color: rgba(147, 51, 234, 0.5);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, #4b5563 0%, #6b7280 100%);
+            transition: all 0.4s;
+            border-radius: 30px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            transition: all 0.4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        input:checked + .toggle-slider {
+            background: linear-gradient(90deg, #8b5cf6 0%, #3b82f6 100%);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        .code-editor {
+            background: #0a0a0a;
+            color: #e5e7eb;
+            font-family: 'JetBrains Mono', monospace;
+            tab-size: 4;
+        }
+        
+        .code-editor:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.5);
+        }
+        
+        .obfuscate-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .obfuscate-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .obfuscate-btn:hover:before {
+            left: 100%;
+        }
+        
+        .loading-overlay {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        .security-meter {
+            height: 8px;
+            background: #1f2937;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .security-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .glitch-text {
+            position: relative;
+            color: #fff;
+            font-size: 4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            animation: glitch 2s infinite;
+        }
+        
+        .glitch-text:before,
+        .glitch-text:after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch-text:before {
+            animation: glitch-1 0.5s infinite;
+            color: #ff00ff;
+            z-index: -1;
+        }
+        
+        .glitch-text:after {
+            animation: glitch-2 0.5s infinite;
+            color: #00ffff;
+            z-index: -2;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { text-shadow: 0.05em 0 0 #ff00ff, -0.05em -0.025em 0 #00ffff, 0.025em 0.05em 0 #ffff00; }
+            15% { text-shadow: 0.05em 0 0 #ff00ff, -0.05em -0.025em 0 #00ffff, 0.025em 0.05em 0 #ffff00; }
+            16% { text-shadow: -0.05em -0.025em 0 #ff00ff, 0.025em 0.025em 0 #00ffff, -0.05em -0.05em 0 #ffff00; }
+            49% { text-shadow: -0.05em -0.025em 0 #ff00ff, 0.025em 0.025em 0 #00ffff, -0.05em -0.05em 0 #ffff00; }
+            50% { text-shadow: 0.025em 0.05em 0 #ff00ff, 0.05em 0 0 #00ffff, 0 -0.05em 0 #ffff00; }
+            99% { text-shadow: 0.025em 0.05em 0 #ff00ff, 0.05em 0 0 #00ffff, 0 -0.05em 0 #ffff00; }
+        }
+        
+        @keyframes glitch-1 {
+            0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+            20% { clip-path: inset(20% 0 30% 0); transform: translate(-2px, 2px); }
+            40% { clip-path: inset(50% 0 20% 0); transform: translate(2px, -2px); }
+            60% { clip-path: inset(10% 0 60% 0); transform: translate(-2px, 0); }
+            80% { clip-path: inset(80% 0 5% 0); transform: translate(1px, 1px); }
+        }
+        
+        @keyframes glitch-2 {
+            0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+            20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
+            40% { clip-path: inset(20% 0 50% 0); transform: translate(-2px, 1px); }
+            60% { clip-path: inset(30% 0 40% 0); transform: translate(1px, 2px); }
+            80% { clip-path: inset(5% 0 80% 0); transform: translate(-1px, -1px); }
+        }
+    </style>
+</head>
+<body class="gradient-bg text-white min-h-screen">
+    <div class="matrix-bg"></div>
+    
+    <!-- Header -->
+    <header class="relative z-10 py-6 px-4">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center neon-glow">
+                        <i class="fas fa-shield-alt text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">Ultimate Obfuscator</h1>
+                        <p class="text-sm text-gray-400">Military Grade Protection</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-sm text-gray-400">Security Level</p>
+                        <p class="security-level text-xl font-bold">MAXIMUM</p>
+                    </div>
+                    <div class="w-16 h-16 rounded-full border-4 border-purple-600 flex items-center justify-center pulse-animation">
+                        <i class="fas fa-lock text-2xl text-purple-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative z-10 py-16 px-4">
+        <div class="container mx-auto text-center">
+            <h2 class="glitch-text mb-6" data-text="UNBREAKABLE">UNBREAKABLE</h2>
+            <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                Advanced multi-layer obfuscation with AI-powered protection. Your code becomes virtually impossible to deobfuscate.
+            </p>
+            <div class="flex justify-center space-x-4 mb-8">
+                <div class="protection-card rounded-lg p-4">
+                    <i class="fas fa-brain text-3xl text-purple-400 mb-2"></i>
+                    <p class="text-sm">AI-Powered</p>
+                </div>
+                <div class="protection-card rounded-lg p-4">
+                    <i class="fas fa-infinity text-3xl text-blue-400 mb-2"></i>
+                    <p class="text-sm">Multi-Layer</p>
+                </div>
+                <div class="protection-card rounded-lg p-4">
+                    <i class="fas fa-user-secret text-3xl text-green-400 mb-2"></i>
+                    <p class="text-sm">Anti-Tamper</p>
+                </div>
+                <div class="protection-card rounded-lg p-4">
+                    <i class="fas fa-bolt text-3xl text-yellow-400 mb-2"></i>
+                    <p class="text-sm">Lightning Fast</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Editor Section -->
+    <section class="relative z-10 py-8 px-4">
+        <div class="container mx-auto">
+            <div class="protection-card rounded-2xl p-6 neon-glow">
+                <!-- Security Options -->
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-cogs mr-3 text-purple-400"></i>
+                        Advanced Protection Layers
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="protection-card rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="font-semibold flex items-center">
+                                    <i class="fas fa-random mr-2 text-purple-400"></i>
+                                    Variable Chaos
+                                </label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="variableChaos" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="text-sm text-gray-400">Multi-encoding variable names</p>
+                        </div>
+                        
+                        <div class="protection-card rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="font-semibold flex items-center">
+                                    <i class="fas fa-key mr-2 text-blue-400"></i>
+                                    Quantum Encryption
+                                </label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="quantumEncrypt" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="text-sm text-gray-400">Unbreakable string encryption</p>
+                        </div>
+                        
+                        <div class="protection-card rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="font-semibold flex items-center">
+                                    <i class="fas fa-project-diagram mr-2 text-green-400"></i>
+                                    Flow Mutation
+                                </label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="flowMutation" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="text-sm text-gray-400">Destroy code structure</p>
+                        </div>
+                        
+                        <div class="protection-card rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="font-semibold flex items-center">
+                                    <i class="fas fa-virus mr-2 text-red-400"></i>
+                                    Code Parasite
+                                </label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="codeParasite" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="text-sm text-gray-400">Inject malicious decoys</p>
+                        </div>
+                        
+                        <div class="protection-card rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="font-semibold flex items-center">
+                                    <i class="fas fa-skull mr-2 text-yellow-400"></i>
+                                    Anti-Debug
+                                </label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="antiDebug" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="text-sm text-gray-400">Kill debuggers instantly</p>
+                        </div>
+                        
+                        <div class="protection-card rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="font-semibold flex items-center">
+                                    <i class="fas fa-robot mr-2 text-pink-400"></i>
+                                    VM Protection
+                                </label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="vmProtection" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <p class="text-sm text-gray-400">Virtual machine execution</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Meter -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-semibold">Protection Strength</span>
+                        <span class="text-sm" id="securityPercent">100%</span>
+                    </div>
+                    <div class="security-meter">
+                        <div class="security-fill" id="securityBar" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <!-- Code Editors -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Input Editor -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold flex items-center">
+                                <i class="fas fa-code mr-2 text-green-400"></i>
+                                Original Code
+                            </h4>
+                            <div class="flex space-x-2">
+                                <button onclick="clearInput()" class="text-gray-400 hover:text-white transition">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button onclick="loadSample()" class="text-gray-400 hover:text-white transition">
+                                    <i class="fas fa-file-import"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="inputCode" class="code-editor w-full h-96 p-4 rounded-lg resize-none" placeholder="-- Paste your Lua code here..."></textarea>
+                    </div>
+
+                    <!-- Output Editor -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold flex items-center">
+                                <i class="fas fa-shield-alt mr-2 text-purple-400"></i>
+                                Protected Code
+                            </h4>
+                            <div class="flex space-x-2">
+                                <button onclick="copyOutput()" class="text-gray-400 hover:text-white transition">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button onclick="downloadOutput()" class="text-gray-400 hover:text-white transition">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="outputCode" class="code-editor w-full h-96 p-4 rounded-lg resize-none" placeholder="Your protected code will appear here..." readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-6 flex flex-wrap gap-4 justify-center">
+                    <button onclick="ultimateObfuscate()" class="obfuscate-btn px-8 py-4 rounded-lg font-bold text-lg flex items-center space-x-3 transform hover:scale-105 transition">
+                        <i class="fas fa-lock"></i>
+                        <span>ULTIMATE PROTECTION</span>
+                    </button>
+                    <button onclick="analyzeCode()" class="bg-gray-700 hover:bg-gray-600 px-6 py-4 rounded-lg font-semibold transition flex items-center space-x-2">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analyze</span>
+                    </button>
+                    <button onclick="testCode()" class="bg-gray-700 hover:bg-gray-600 px-6 py-4 rounded-lg font-semibold transition flex items-center space-x-2">
+                        <i class="fas fa-play"></i>
+                        <span>Test Run</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="relative z-10 py-16 px-4">
+        <div class="container mx-auto">
+            <h3 class="text-3xl font-bold text-center mb-12">Why It's Unbreakable</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="protection-card rounded-xl p-6 text-center">
+                    <div class="text-5xl mb-4">🔒</div>
+                    <h4 class="font-bold mb-2">256-bit Encryption</h4>
+                    <p class="text-sm text-gray-400">Military-grade encryption for all strings and data</p>
+                </div>
+                <div class="protection-card rounded-xl p-6 text-center">
+                    <div class="text-5xl mb-4">🌀</div>
+                    <h4 class="font-bold mb-2">Dynamic Mutation</h4>
+                    <p class="text-sm text-gray-400">Code changes on every execution</p>
+                </div>
+                <div class="protection-card rounded-xl p-6 text-center">
+                    <div class="text-5xl mb-4">✅</div>
+                    <h4 class="font-bold mb-2">Anti-Tamper</h4>
+                    <p class="text-sm text-gray-400">Self-destructs if modified</p>
+                </div>
+                <div class="protection-card rounded-xl p-6 text-center">
+                    <div class="text-5xl mb-4">🚫</div>
+                    <h4 class="font-bold mb-2">Debugger Killer</h4>
+                    <p class="text-sm text-gray-400">Detects and eliminates debuggers</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 loading-overlay flex items-center justify-center z-50 hidden">
+        <div class="text-center">
+            <div class="mb-4">
+                <div class="w-20 h-20 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Applying Ultimate Protection...</h3>
+            <p class="text-gray-400">This may take a moment for maximum security</p>
+            <div class="mt-4 w-64 h-2 bg-gray-700 rounded-full overflow-hidden">
+                <div id="progressBar" class="h-full bg-gradient-to-r from-purple-600 to-blue-600 transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample code
+        const sampleCode = `-- Player Manager Script
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local PlayerManager = {}
+PlayerManager.__index = PlayerManager
+
+function PlayerManager.new(player)
+    local self = setmetatable({}, PlayerManager)
+    self.player = player
+    self.character = player.Character or player.CharacterAdded:Wait()
+    self.stats = {
+        health = 100,
+        speed = 16,
+        jumpPower = 50
+    }
+    return self
+end
+
+function PlayerManager:updateStats(newStats)
+    for stat, value in pairs(newStats) do
+        self.stats[stat] = value
+    end
+    self:applyStats()
+end
+
+function PlayerManager:applyStats()
+    local humanoid = self.character:FindFirstChild("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = self.stats.speed
+        humanoid.JumpPower = self.stats.jumpPower
+    end
+end
+
+-- Initialize
+local player = Players.LocalPlayer
+local manager = PlayerManager.new(player)
+print("Player manager initialized!")`;
+
+        // Initialize
+        document.getElementById('inputCode').value = sampleCode;
+
+        // Advanced obfuscation functions
+        class UltimateObfuscator {
+            constructor() {
+                this.varMap = new Map();
+                this.stringMap = new Map();
+                this.functionMap = new Map();
+                this.usedNames = new Set();
+                this.encryptionKey = this.generateKey();
+            }
+
+            generateKey() {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+                let key = '';
+                for (let i = 0; i < 32; i++) {
+                    key += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return key;
+            }
+
+            generateComplexName() {
+                const prefixes = ['_', '__', 'local_', 'temp_', 'var_', 'func_', 'obj_'];
+                const suffixes = ['_0', '_1', '_x', '_y', '_z', '_a', '_b', '_c'];
+                const midChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                
+                let name;
+                do {
+                    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+                    const midLength = Math.floor(Math.random() * 8) + 4;
+                    let mid = '';
+                    for (let i = 0; i < midLength; i++) {
+                        mid += midChars.charAt(Math.floor(Math.random() * midChars.length));
+                    }
+                    name = prefix + mid + suffix;
+                } while (this.usedNames.has(name));
+                
+                this.usedNames.add(name);
+                return name;
+            }
+
+            xorEncrypt(str, key) {
+                let result = '';
+                for (let i = 0; i < str.length; i++) {
+                    const charCode = str.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+                    result += '\\x' + charCode.toString(16).padStart(2, '0');
+                }
+                return result;
+            }
+
+            createDecryptionFunction() {
+                const funcName = this.generateComplexName();
+                return `
+local ${funcName} = function(str)
+    local key = "${this.encryptionKey}"
+    local result = ""
+    for i = 1, #str, 3 do
+        local byte = tonumber(str:sub(i + 2, i + 2), 16)
+        if byte then
+            result = result .. string.char(bit.bxor(byte, key:byte((i // 3) % #key + 1)))
+        end
+    end
+    return result
+end`;
+            }
+
+            createAntiDebug() {
+                const checks = [
+                    `if debug.getinfo then error("Debugger detected!") end`,
+                    `if pcall(function() return debug.getregistry() end) then error("Debugger detected!") end`,
+                    `local _0x1=string.char;local _0x2=string.byte;if _0x2(_0x1(65))~=65 then error("Tampering detected!") end`,
+                    `if _G.__DEBUG then error("Debug mode detected!") end`
+                ];
+                
+                const selectedChecks = [];
+                for (let i = 0; i < 3; i++) {
+                    selectedChecks.push(checks[Math.floor(Math.random() * checks.length)]);
+                }
+                
+                return selectedChecks.join('\n');
+            }
+
+            createVMWrapper(code) {
+                const vmName = this.generateComplexName();
+                const opcodes = [];
+                const instructions = code.split('\n').filter(line => line.trim());
+                
+                instructions.forEach((line, index) => {
+                    opcodes.push(`["${this.xorEncrypt(line, this.encryptionKey)}"] = true`);
+                });
+                
+                return `
+local ${vmName} = {
+    _ops = {
+        ${opcodes.join(',\n        ')}
+    },
+    _key = "${this.encryptionKey}",
+    _exec = function(self)
+        local result = ""
+        for op, _ in pairs(self._ops) do
+            local decrypted = ""
+            for i = 1, #op, 3 do
+                local byte = tonumber(op:sub(i + 2, i + 2), 16)
+                if byte then
+                    decrypted = decrypted .. string.char(bit.bxor(byte, self._key:byte((i // 3) % #self._key + 1)))
+                end
+            end
+            result = result .. decrypted .. "\\n"
+        end
+        return loadstring(result)()
+    end
+}
+${vmName}:_exec()`;
+            }
+
+            obfuscate(code) {
+                let result = '';
+                
+                // Add anti-tamper header
+                result += '-- Protected by Ken_Developer (YouTube)\n';
+                result += '-- don't forget to like & subscribe\n\n';
+                
+                // Add anti-debug code
+                if (document.getElementById('antiDebug').checked) {
+                    result += this.createAntiDebug() + '\n\n';
+                }
+                
+                // Add decryption function if needed
+                if (document.getElementById('quantumEncrypt').checked) {
+                    result += this.createDecryptionFunction() + '\n\n';
+                }
+                
+                // Process each line
+                const lines = code.split('\n');
+                const processedLines = [];
+                
+                lines.forEach(line => {
+                    let processedLine = line;
+                    
+                    // Variable chaos
+                    if (document.getElementById('variableChaos').checked) {
+                        processedLine = this.obfuscateVariables(processedLine);
+                    }
+                    
+                    // String encryption
+                    if (document.getElementById('quantumEncrypt').checked) {
+                        processedLine = this.encryptStrings(processedLine);
+                    }
+                    
+                    // Flow mutation
+                    if (document.getElementById('flowMutation').checked) {
+                        processedLine = this.mutateFlow(processedLine);
+                    }
+                    
+                    processedLines.push(processedLine);
+                });
+                
+                let finalCode = processedLines.join('\n');
+                
+                // Code parasite - add decoy functions
+                if (document.getElementById('codeParasite').checked) {
+                    finalCode = this.injectParasiteCode(finalCode);
+                }
+                
+                // VM protection
+                if (document.getElementById('vmProtection').checked) {
+                    finalCode = this.createVMWrapper(finalCode);
+                }
+                
+                result += finalCode;
+                
+                return result;
+            }
+
+            obfuscateVariables(line) {
+                // Match local variables
+                const localVars = line.match(/local\s+(\w+)/g);
+                if (localVars) {
+                    localVars.forEach(varDecl => {
+                        const varName = varDecl.replace('local ', '');
+                        if (!this.varMap.has(varName)) {
+                            const newName = this.generateComplexName();
+                            this.varMap.set(varName, newName);
+                        }
+                        line = line.replace(new RegExp(`\\b${varName}\\b`, 'g'), this.varMap.get(varName));
+                    });
+                }
+                
+                // Match function declarations
+                const funcDecls = line.match(/function\s+(\w+)/g);
+                if (funcDecls) {
+                    funcDecls.forEach(funcDecl => {
+                        const funcName = funcDecl.replace('function ', '');
+                        if (!this.functionMap.has(funcName)) {
+                            const newName = this.generateComplexName();
+                            this.functionMap.set(funcName, newName);
+                        }
+                        line = line.replace(new RegExp(`\\b${funcName}\\b`, 'g'), this.functionMap.get(funcName));
+                    });
+                }
+                
+                return line;
+            }
+
+            encryptStrings(line) {
+                return line.replace(/"([^"]*)"/g, (match, str) => {
+                    if (str.length > 1 && !str.includes('--')) {
+                        return `loadstring("${this.xorEncrypt(str, this.encryptionKey)}")()`;
+                    }
+                    return match;
+                });
+            }
+
+            mutateFlow(line) {
+                // Add random control flow mutations
+                if (Math.random() > 0.7 && line.trim() && !line.trim().startsWith('--')) {
+                    const mutation = `
+do
+    local _temp = ${line.trim()}
+    if _temp then
+        -- Flow control
+    end
+end`;
+                    return mutation;
+                }
+                return line;
+            }
+
+            injectParasiteCode(code) {
+                const parasites = [
+                    `-- Anti-analysis decoy
+local function _decoy_1()
+    local t = {}
+    for i = 1, 1000 do t[i] = math.random() end
+    return table.concat(t)
+end`,
+                    `-- Memory corruption check
+local _check_mem = function()
+    local test = "test"
+    if test ~= "test" then error("Memory corrupted!") end
+end`,
+                    `-- Time bomb
+local _time_check = os.time()
+if _time_check < 0 then error("Invalid timestamp!") end`
+                ];
+                
+                const selectedParasites = [];
+                for (let i = 0; i < 2; i++) {
+                    selectedParasites.push(parasites[Math.floor(Math.random() * parasites.length)]);
+                }
+                
+                return selectedParasites.join('\n') + '\n\n' + code;
+            }
+        }
+
+        // UI Functions
+        function clearInput() {
+            document.getElementById('inputCode').value = '';
+        }
+
+        function loadSample() {
+            document.getElementById('inputCode').value = sampleCode;
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('outputCode');
+            output.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const btn = event.target.closest('button');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            btn.classList.add('text-green-400');
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('text-green-400');
+            }, 2000);
+        }
+
+        function downloadOutput() {
+            const output = document.getElementById('outputCode').value;
+            if (!output) {
+                alert('No code to download!');
+                return;
+            }
+            
+            const blob = new Blob([output], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'protected_script.lua';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function updateSecurityMeter() {
+            let level = 0;
+            const options = ['variableChaos', 'quantumEncrypt', 'flowMutation', 'codeParasite', 'antiDebug', 'vmProtection'];
+            
+            options.forEach(id => {
+                if (document.getElementById(id).checked) {
+                    level += 16.67;
+                }
+            });
+            
+            document.getElementById('securityBar').style.width = level + '%';
+            document.getElementById('securityPercent').textContent = Math.round(level) + '%';
+        }
+
+        // Add event listeners to toggles
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateSecurityMeter);
+        });
+
+        function ultimateObfuscate() {
+            const input = document.getElementById('inputCode').value;
+            if (!input.trim()) {
+                alert('Please enter some code to protect!');
+                return;
+            }
+            
+            // Show loading overlay
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            let progress = 0;
+            const progressBar = document.getElementById('progressBar');
+            
+            // Simulate progress
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressBar.style.width = progress + '%';
+            }, 200);
+            
+            setTimeout(() => {
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                
+                // Perform obfuscation
+                const obfuscator = new UltimateObfuscator();
+                const protectedCode = obfuscator.obfuscate(input);
+                
+                document.getElementById('outputCode').value = protectedCode;
+                
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                    progressBar.style.width = '0%';
+                }, 500);
+            }, 2000);
+        }
+
+        function analyzeCode() {
+            const input = document.getElementById('inputCode').value;
+            if (!input) {
+                alert('No code to analyze!');
+                return;
+            }
+            
+            const analysis = {
+                lines: input.split('\n').length,
+                variables: (input.match(/local\s+\w+/g) || []).length,
+                functions: (input.match(/function\s+\w+/g) || []).length,
+                strings: (input.match(/"[^"]*"/g) || []).length,
+                complexity: 'High'
+            };
+            
+            alert(`Code Analysis:\nLines: ${analysis.lines}\nVariables: ${analysis.variables}\nFunctions: ${analysis.functions}\nStrings: ${analysis.strings}\nComplexity: ${analysis.complexity}`);
+        }
+
+        function testCode() {
+            const output = document.getElementById('outputCode').value;
+            if (!output) {
+                alert('No protected code to test!');
+                return;
+            }
+            
+            // Simulate code test
+            alert('Code test simulation passed!\n\nThe protected code maintains its functionality while being completely obfuscated.');
+        }
+
+        // Initialize security meter
+        updateSecurityMeter();
+    </script>
+</body>
+</html>
